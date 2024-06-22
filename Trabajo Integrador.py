@@ -40,10 +40,10 @@ while True:
 
         for result in results:
             for box in result.boxes:
-                if box.cls in vehicle_classes and box.conf > 0.30:
-                    x1, y1, x2, y2 = box.xyxy[0].tolist()  # Extrae las coordenadas de la bounding box
-                    conf = box.conf[0]  # Extrae la confianza de la predicción
-                    cls = box.cls[0]  # Extrae la clase de la predicción
+                if box.cls in vehicle_classes and box.conf > 0.30:  # Solo extrae los vehiculos detectados con una confianza superior al 30%
+                    x1, y1, x2, y2 = box.xyxy[0].tolist()           # Extrae las coordenadas de la bounding box
+                    conf = box.conf[0]                              # Extrae la confianza de la predicción
+                    cls = box.cls[0]                                # Extrae la clase de la predicción
                     
                     label = f'{ov_model.names[int(cls)]} {conf:.2f}'
                     
@@ -51,7 +51,7 @@ while True:
                     cv2.rectangle(frame, (int(x1), int(y1)), (int(x2), int(y2)), (255, 0, 0), 2)
                     cv2.putText(frame, label, (int(x1), int(y1) - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (255, 0, 0), 2)
 
-        cv2.imshow('TRABAJO INTEGRADOR',frame)
+        cv2.imshow('TRABAJO INTEGRADOR',frame)  # Titulo de la ventana
 
-        if cv2.waitKey(1) & 0xFF == ord("q"):
+        if cv2.waitKey(1) & 0xFF == ord("q"):   # Precionar q para salir
             break
