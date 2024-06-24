@@ -18,7 +18,7 @@ args = parse_arguments()
 frame_width, frame_heigth = args.webcam_resolution
 
 # Captura el video y su resolucion
-cap = cv2.VideoCapture(2)                           # Se puede sustituir el dispositivo de entrada
+cap = cv2.VideoCapture(0)                           # Se puede sustituir el dispositivo de entrada
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, frame_heigth)    # Alto
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, frame_width)      # Ancho
 
@@ -32,7 +32,7 @@ while True:
 
         for result in results:
             for box in result.boxes:
-                if box.conf > 0.30:  # Solo extrae los vehiculos detectados con una confianza superior al 30%
+                if box.conf > 0.40:  # Solo extrae las matriculas detectadas con una confianza superior al 30%
                     x1, y1, x2, y2 = box.xyxy[0].tolist()           # Extrae las coordenadas de la bounding box
                     conf = box.conf[0]                              # Extrae la confianza de la predicción
                     cls = box.cls[0]                                # Extrae la clase de la predicción
