@@ -33,14 +33,10 @@ m = ONNXPlateRecognizer('argentinian-plates-cnn-model')
 output_folder = 'Imagenes Detectadas'
 os.makedirs(output_folder, exist_ok=True)
 
-#Funcion para guardar las imagenes
 def save_detected_image(image, text):
-    # Remueve caracteres no permitidos para un nombre de archivo
-    text = "".join([c for c in text if c.isalnum() or c in (' ', '.', '_')]).rstrip()
     filename = os.path.join(output_folder, f"{text}.jpg")
     cv2.imwrite(filename, image)
 
-#Inicio del ciclo de Captura de video
 while True:
     ret, frame = cap.read()
 
@@ -48,7 +44,7 @@ while True:
 
     for result in results:
         for box in result.boxes:
-            if box.conf > 0.40:                                 # Solo extrae las matriculas detectadas con una confianza superior al 40%
+            if box.conf > 0.40:  # Solo extrae las matriculas detectadas con una confianza superior al 30%
                 x1, y1, x2, y2 = box.xyxy[0].tolist()           # Extrae las coordenadas de la bounding box
                 conf = box.conf[0]                              # Extrae la confianza de la predicción
                 cls = box.cls[0]                                # Extrae la clase de la predicción
@@ -66,7 +62,6 @@ while True:
                 # Muestra el frame recortado en una nueva ventana
                 cv2.imshow('Recorte de Matricula', cropped_frame)
 
-                #Escribe la matricula detectada y la confianza
                 label = f'{plate_text} {conf:.2f}'
 
                 # Dibuja la bounding box en el frame
@@ -101,8 +96,8 @@ def load_images_from_folder(folder):
     return images, filenames
 
 # Ruta de la carpeta de imágenes
-input_folder_Cluster = output_folder
-images, filenames = load_images_from_folder(input_folder_Cluster)
+input_folder = output_folder
+images, filenames = load_images_from_folder(input_folder)
 
 # Extraer características de las imágenes
 features_list = [extract_hog_features(image) for image in images]
@@ -120,10 +115,16 @@ kmeans.fit(features_array)
 
 # Obtener las etiquetas de clúster para cada imagen
 cluster_labels = kmeans.labels_
+# Función para crear carpetas de salida si no existen
+def create_output_folders(base_folder, num_clusters):
+    for i in range(num_clusters):
+        cluster_folder = os.path.join(base_folder, f'cluster_{i}')
+        if not os.path.exists(cluster_folder):
+            os.makedirs(cluster_folder)
 
 # Ruta de la carpeta de salida
-output_folder_Cluster = 'Imagenes_clusterizadas'
-os.makedirs(output_folder_Cluster, exist_ok=True)
+output_folder = 'Imagenes Clusterizadas'
+create_output_folders(output_folder, num_clusters)
 
 # Guardar imágenes en las carpetas correspondientes a sus clústeres
 for img, label, filename in zip(images, cluster_labels, filenames):
